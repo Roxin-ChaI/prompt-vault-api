@@ -3,7 +3,16 @@ name = "prompt-vault-api"
 version = "0.1.0"
 description = "A REST API for managing reusable prompts."
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx",
+    "pytest",
+    "ruff",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
