@@ -1,0 +1,8 @@
+services:
+  api:
+    build:
+      context: .
+    image: prompt-vault-api
+    container_name: prompt-vault-api
+    ports:
+      - "8000:8000"
