@@ -172,7 +172,29 @@ def test_update_prompt_returns_not_found() -> None:
     assert response.status_code == 404
     assert response.json() == {"detail": "Prompt not found"}
 
+def test_delete_prompt() -> None:
+    created_response = client.post(
+        "/prompts",
+        json={
+            "title": "Code Review",
+            "content": "Review this code for correctness.",
+            "tags": ["python", "review"],
+        },
+    )
+    prompt_id = created_response.json()["id"]
 
+    response = client.delete(f"/prompts/{prompt_id}")
 
+    assert response.status_code == 204
+    assert response.content == b""
 
+    get_response = client.get(f"/prompts/{prompt_id}")
+
+    assert get_response.status_code == 404
+
+def test_delete_prompt_returns_not_found() -> None:
+    response = client.delete("/prompts/999")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Prompt not found"}
 

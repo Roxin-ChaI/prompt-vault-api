@@ -95,7 +95,20 @@ def update_prompt(
         detail="Prompt not found",
     )
 
+@app.delete(
+    "/prompts/{prompt_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_prompt(prompt_id: int) -> None:
+    for index, prompt in enumerate(prompts):
+        if prompt.id == prompt_id:
+            prompts.pop(index)
+            return
 
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Prompt not found",
+    )
 
 
 
