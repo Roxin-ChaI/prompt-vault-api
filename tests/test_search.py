@@ -1,0 +1,122 @@
+from collections.abc import Iterator
+
+import pytest
+from fastapi.testclient import TestClient
+
+from app.main import app, prompts
+
+client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def clear_prompts() -> Iterator[None]:
+    prompts.clear()
+
+    yield
+
+    prompts.clear()
+
+
+def test_search_prompts_by_title_keyword() -> None:
+    client.post(
+        "/prompts",
+        json={
+            "title": "Python Code Review",
+            "content": "Review code for correctness.",
+            "tags": ["python", "review"],
+        },
+    )
+    client.post(
+        "/prompts",
+        json={
+            "title": "Text Summary",
+            "content": "Summarize the following article.",
+            "tags": ["writing"],
+        },
+    )
+
+    response = client.get(
+        "/prompts/search",
+        params={"q": "python"},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["title"] == "Python Code Review"
+
+def test_search_prompts_by_content_keyword() -> None:
+    client.post(
+        "/prompts",
+        json={
+            "title": "Code Analysis",
+            "content": "Review Python code for correctness.",
+            "tags": ["review"],
+        },
+    )
+    client.post(
+        "/prompts",
+        json={
+            "title": "Text Summary",
+            "content": "Summarize the following article.",
+            "tags": ["writing"],
+        },
+    )
+
+    response = client.get(
+        "/prompts/search",
+        params={"q": "python"},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["title"] == "Code Analysis"
+
+def test_search_prompts_is_case_insensitive() -> None:
+    client.post(
+        "/prompts",
+        json={
+            "title": "Python Code Review",
+            "content": "Review code for correctness.",
+            "tags": ["python"],
+        },
+    )
+
+    response = client.get(
+        "/prompts/search",
+        params={"q": "PYTHON"},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["title"] == "Python Code Review"
+
+def test_search_prompts_returns_empty_list_when_no_match() -> None:
+    client.post(
+        "/prompts",
+        json={
+            "title": "Python Code Review",
+            "content": "Review code for correctness.",
+            "tags": ["python"],
+        },
+    )
+
+    response = client.get(
+        "/prompts/search",
+        params={"q": "translation"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+
+

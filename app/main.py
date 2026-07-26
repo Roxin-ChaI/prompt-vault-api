@@ -47,6 +47,20 @@ def list_prompts() -> list[PromptResponse]:
     return prompts
 
 @app.get(
+    "/prompts/search",
+    response_model=list[PromptResponse],
+)
+def search_prompts(q: str) -> list[PromptResponse]:
+    keyword = q.casefold()
+
+    return [
+        prompt
+        for prompt in prompts
+        if keyword in prompt.title.casefold()
+        or keyword in prompt.content.casefold()
+    ]
+
+@app.get(
     "/prompts/{prompt_id}",
     response_model=PromptResponse,
 )
