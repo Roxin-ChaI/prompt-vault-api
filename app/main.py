@@ -5,12 +5,9 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.database import Base, engine
 from app.dependencies import get_db
 from app.models import Prompt
 from app.schemas import PromptCreate, PromptResponse, PromptUpdate
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Prompt Vault API",
