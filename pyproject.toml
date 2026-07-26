@@ -16,6 +16,12 @@ dev = [
     "alembic",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["migrations*", "tests*"]
+namespaces = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
