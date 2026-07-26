@@ -106,3 +106,25 @@ def test_list_prompts() -> None:
     assert data[0]["title"] == "Code Review"
     assert data[1]["id"] == 2
     assert data[1]["title"] == "Summarize"
+
+def test_get_prompt_by_id() -> None:
+    created_response = client.post(
+        "/prompts",
+        json={
+            "title": "Code Review",
+            "content": "Review this code for correctness.",
+            "tags": ["python", "review"],
+        },
+    )
+    prompt_id = created_response.json()["id"]
+
+    response = client.get(f"/prompts/{prompt_id}")
+
+    assert response.status_code == 200
+    assert response.json() == created_response.json()
+
+def test_get_prompt_by_id_returns_not_found() -> None:
+    response = client.get("/prompts/999")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Prompt not found"}

@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 
 from app.schemas import PromptCreate, PromptResponse
 
@@ -45,3 +45,17 @@ def create_prompt(prompt: PromptCreate) -> PromptResponse:
 )
 def list_prompts() -> list[PromptResponse]:
     return prompts
+
+@app.get(
+    "/prompts/{prompt_id}",
+    response_model=PromptResponse,
+)
+def get_prompt(prompt_id: int) -> PromptResponse:
+    for prompt in prompts:
+        if prompt.id == prompt_id:
+            return prompt
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Prompt not found",
+    )
