@@ -43,8 +43,20 @@ def create_prompt(prompt: PromptCreate) -> PromptResponse:
     "/prompts",
     response_model=list[PromptResponse],
 )
-def list_prompts() -> list[PromptResponse]:
-    return prompts
+def list_prompts(tag: str | None = None) -> list[PromptResponse]:
+    if tag is None:
+        return prompts
+
+    normalized_tag = tag.casefold()
+
+    return [
+        prompt
+        for prompt in prompts
+        if any(
+            prompt_tag.casefold() == normalized_tag
+            for prompt_tag in prompt.tags
+        )
+    ]
 
 @app.get(
     "/prompts/search",
