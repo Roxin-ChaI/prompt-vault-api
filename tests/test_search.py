@@ -1,20 +1,8 @@
-from collections.abc import Iterator
-
-import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app, prompts
+from app.main import app
 
 client = TestClient(app)
-
-
-@pytest.fixture(autouse=True)
-def clear_prompts() -> Iterator[None]:
-    prompts.clear()
-
-    yield
-
-    prompts.clear()
 
 
 def test_search_prompts_by_title_keyword() -> None:
@@ -47,6 +35,7 @@ def test_search_prompts_by_title_keyword() -> None:
     assert len(data) == 1
     assert data[0]["title"] == "Python Code Review"
 
+
 def test_search_prompts_by_content_keyword() -> None:
     client.post(
         "/prompts",
@@ -77,6 +66,7 @@ def test_search_prompts_by_content_keyword() -> None:
     assert len(data) == 1
     assert data[0]["title"] == "Code Analysis"
 
+
 def test_search_prompts_is_case_insensitive() -> None:
     client.post(
         "/prompts",
@@ -99,6 +89,7 @@ def test_search_prompts_is_case_insensitive() -> None:
     assert len(data) == 1
     assert data[0]["title"] == "Python Code Review"
 
+
 def test_search_prompts_returns_empty_list_when_no_match() -> None:
     client.post(
         "/prompts",
@@ -116,6 +107,7 @@ def test_search_prompts_returns_empty_list_when_no_match() -> None:
 
     assert response.status_code == 200
     assert response.json() == []
+
 
 def test_list_prompts_filters_by_tag() -> None:
     client.post(
@@ -147,6 +139,7 @@ def test_list_prompts_filters_by_tag() -> None:
     assert len(data) == 1
     assert data[0]["title"] == "Python Code Review"
 
+
 def test_tag_filter_is_case_insensitive() -> None:
     client.post(
         "/prompts",
@@ -169,6 +162,7 @@ def test_tag_filter_is_case_insensitive() -> None:
     assert len(data) == 1
     assert data[0]["title"] == "Python Code Review"
 
+
 def test_tag_filter_returns_empty_list_when_no_match() -> None:
     client.post(
         "/prompts",
@@ -186,8 +180,3 @@ def test_tag_filter_returns_empty_list_when_no_match() -> None:
 
     assert response.status_code == 200
     assert response.json() == []
-
-
-
-
-

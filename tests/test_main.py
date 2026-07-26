@@ -1,21 +1,11 @@
-from collections.abc import Iterator
 from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app, prompts
+from app.main import app
 
 client = TestClient(app)
-
-
-@pytest.fixture(autouse=True)
-def clear_prompts() -> Iterator[None]:
-    prompts.clear()
-
-    yield
-
-    prompts.clear()
 
 
 def test_read_root() -> None:
@@ -68,7 +58,7 @@ def test_create_prompt_rejects_empty_required_fields(
     response = client.post("/prompts", json=payload)
 
     assert response.status_code == 422
-    assert prompts == []
+
 
 def test_list_prompts_returns_empty_list() -> None:
     response = client.get("/prompts")
@@ -107,6 +97,7 @@ def test_list_prompts() -> None:
     assert data[1]["id"] == 2
     assert data[1]["title"] == "Summarize"
 
+
 def test_get_prompt_by_id() -> None:
     created_response = client.post(
         "/prompts",
@@ -123,11 +114,13 @@ def test_get_prompt_by_id() -> None:
     assert response.status_code == 200
     assert response.json() == created_response.json()
 
+
 def test_get_prompt_by_id_returns_not_found() -> None:
     response = client.get("/prompts/999")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Prompt not found"}
+
 
 def test_update_prompt() -> None:
     created_response = client.post(
@@ -161,6 +154,7 @@ def test_update_prompt() -> None:
         updated_prompt["updated_at"]
     ) >= datetime.fromisoformat(created_prompt["updated_at"])
 
+
 def test_update_prompt_returns_not_found() -> None:
     response = client.put(
         "/prompts/999",
@@ -171,6 +165,7 @@ def test_update_prompt_returns_not_found() -> None:
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Prompt not found"}
+
 
 def test_delete_prompt() -> None:
     created_response = client.post(
@@ -192,9 +187,9 @@ def test_delete_prompt() -> None:
 
     assert get_response.status_code == 404
 
+
 def test_delete_prompt_returns_not_found() -> None:
     response = client.delete("/prompts/999")
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Prompt not found"}
-

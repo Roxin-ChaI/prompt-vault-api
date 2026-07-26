@@ -1,27 +1,15 @@
-# Virtual environment
-.venv/
-
-# Python cache
 __pycache__/
 *.py[cod]
+*$py.class
 
-# Python package metadata
+.venv/
+
 *.egg-info/
 
-# Test and lint caches
 .pytest_cache/
+
 .ruff_cache/
 
-# Coverage
-.coverage
-htmlcov/
+prompt_vault.db
 
-# Environment variables
-.env
-
-# macOS
 .DS_Store
-
-# IDE
-.vscode/
-.idea/
