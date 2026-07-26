@@ -37,3 +37,11 @@ def create_prompt(prompt: PromptCreate) -> PromptResponse:
     prompts.append(created_prompt)
 
     return created_prompt
+
+
+@app.get(
+    "/prompts",
+    response_model=list[PromptResponse],
+)
+def list_prompts() -> list[PromptResponse]:
+    return prompts

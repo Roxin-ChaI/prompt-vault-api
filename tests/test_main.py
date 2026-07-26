@@ -69,3 +69,40 @@ def test_create_prompt_rejects_empty_required_fields(
 
     assert response.status_code == 422
     assert prompts == []
+
+def test_list_prompts_returns_empty_list() -> None:
+    response = client.get("/prompts")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_list_prompts() -> None:
+    client.post(
+        "/prompts",
+        json={
+            "title": "Code Review",
+            "content": "Review this code for correctness.",
+            "tags": ["python"],
+        },
+    )
+    client.post(
+        "/prompts",
+        json={
+            "title": "Summarize",
+            "content": "Summarize the following text.",
+            "tags": ["writing"],
+        },
+    )
+
+    response = client.get("/prompts")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+    assert data[0]["id"] == 1
+    assert data[0]["title"] == "Code Review"
+    assert data[1]["id"] == 2
+    assert data[1]["title"] == "Summarize"
